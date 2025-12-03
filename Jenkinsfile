@@ -7,7 +7,7 @@ pipeline {
         // 미리 만들어두신 프로젝트 이름
         PROJECT = 'test'
         // 이미지 이름
-        IMAGE_NAME = 'my-web-site'
+        IMAGE_NAME = 'yeZZIns'
         // 1단계에서 만든 자격증명 ID
         CREDENTIAL_ID = 'harbor-login'
     }
