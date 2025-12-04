@@ -14,10 +14,7 @@ pipeline {
         // SonarQube URL 및 토큰 설정
         SONARQUBE_URL = 'http://192.168.0.204:9000'  // SonarQube 서버 주소
         SONARQUBE_TOKEN = 'sqa_ecde331e39aafd80cb15b8b2d73162017c8bef9a'  // SonarQube에서 생성한 토큰
-<<<<<<< HEAD
-=======
         SONARQUBE = 'SonarQube' // SonarQube 서버 이름
->>>>>>> 1e658e8 (yezzin)
     }
 
     stages {
@@ -32,7 +29,7 @@ pipeline {
                 script {
                     // SonarQube 분석 실행
                     def scannerHome = tool 'SonarScanner'  // SonarQube Scanner 경로 설정
-                    withSonarQubeEnv() {  // SonarQube 환경 설정을 가져옴
+                    withSonarQubeEnv(SONARQUBE) {  // SonarQube 환경 설정을 가져옴
                         sh "${scannerHome}/bin/sonar-scanner"  // sonar-scanner 실행
                     }
                 }
@@ -56,24 +53,6 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    // SonarQube 분석 실행
-                    withSonarQubeEnv(SONARQUBE) {
-                        sh '''
-                        sonar-scanner \
-                        -Dsonar.projectKey=${PROJECT} \
-                        -Dsonar.projectName="${PROJECT}" \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=${SONARQUBE_URL} \
-                        -Dsonar.login=${SONARQUBE_TOKEN}
-                        '''
-                    }
-                }
-            }
-        }
-
         stage('Build & Push') {
             steps {
                 script {
@@ -84,13 +63,7 @@ pipeline {
 
                     // Docker 로그인 및 푸시
                     withCredentials([usernamePassword(credentialsId: CREDENTIAL_ID, usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-<<<<<<< HEAD
-                        // Docker 로그인
                         sh "docker login ${REGISTRY} -u \$USER -p \$PASS"
-                        // Docker 이미지 푸시
-=======
-                        sh "docker login ${REGISTRY} -u \$USER -p \$PASS"
->>>>>>> 1e658e8 (yezzin)
                         sh "docker push ${fullImageName}"
                     }
 
