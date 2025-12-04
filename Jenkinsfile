@@ -14,6 +14,10 @@ pipeline {
         // SonarQube URL 및 토큰 설정
         SONARQUBE_URL = 'http://192.168.0.204:9000'  // SonarQube 서버 주소
         SONARQUBE_TOKEN = 'sqa_ecde331e39aafd80cb15b8b2d73162017c8bef9a'  // SonarQube에서 생성한 토큰
+<<<<<<< HEAD
+=======
+        SONARQUBE = 'SonarQube' // SonarQube 서버 이름
+>>>>>>> 1e658e8 (yezzin)
     }
 
     stages {
@@ -52,19 +56,41 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // SonarQube 분석 실행
+                    withSonarQubeEnv(SONARQUBE) {
+                        sh '''
+                        sonar-scanner \
+                        -Dsonar.projectKey=${PROJECT} \
+                        -Dsonar.projectName="${PROJECT}" \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=${SONARQUBE_URL} \
+                        -Dsonar.login=${SONARQUBE_TOKEN}
+                        '''
+                    }
+                }
+            }
+        }
+
         stage('Build & Push') {
             steps {
                 script {
                     def fullImageName = "${REGISTRY}/${PROJECT}/${IMAGE_NAME}:${env.IMAGE_TAG}"
 
-                    // [수정됨] ./source -> . (점 하나)
-                    // 이유: 깃허브 최상위 경로에 Dockerfile이 있기 때문
+                    // Docker 이미지 빌드 (Dockerfile은 저장소 최상위 경로에 있어야 합니다.)
                     sh "docker build -t ${fullImageName} ."
 
+                    // Docker 로그인 및 푸시
                     withCredentials([usernamePassword(credentialsId: CREDENTIAL_ID, usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+<<<<<<< HEAD
                         // Docker 로그인
                         sh "docker login ${REGISTRY} -u \$USER -p \$PASS"
                         // Docker 이미지 푸시
+=======
+                        sh "docker login ${REGISTRY} -u \$USER -p \$PASS"
+>>>>>>> 1e658e8 (yezzin)
                         sh "docker push ${fullImageName}"
                     }
 
@@ -78,7 +104,7 @@ pipeline {
                 script {
                     def fullImageName = "${REGISTRY}/${PROJECT}/${IMAGE_NAME}:${env.IMAGE_TAG}"
 
-                    // 기존 컨테이너 삭제 후 재실행
+                    // 기존 컨테이너 삭제 후 새 이미지로 실행
                     sh "docker rm -f my-web-server || true"
                     sh "docker run -d -p 8081:80 --name my-web-server ${fullImageName}"
                 }
