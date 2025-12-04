@@ -10,9 +10,31 @@ pipeline {
         IMAGE_NAME = 'yezzns'
         // 1단계에서 만든 자격증명 ID
         CREDENTIAL_ID = 'harbor-login'
+
+        // SonarQube URL 및 토큰 설정
+        SONARQUBE_URL = 'http://192.168.0.204:9000'  // SonarQube 서버 주소
+        SONARQUBE_TOKEN = 'sqa_ecde331e39aafd80cb15b8b2d73162017c8bef9a'  // SonarQube에서 생성한 토큰
     }
 
     stages {
+        stage('SCM') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    // SonarQube 분석 실행
+                    def scannerHome = tool 'SonarScanner'  // SonarQube Scanner 경로 설정
+                    withSonarQubeEnv() {  // SonarQube 환경 설정을 가져옴
+                        sh "${scannerHome}/bin/sonar-scanner"  // sonar-scanner 실행
+                    }
+                }
+            }
+        }
+
         stage('Calculate Version') {
             steps {
                 script {
@@ -40,8 +62,9 @@ pipeline {
                     sh "docker build -t ${fullImageName} ."
 
                     withCredentials([usernamePassword(credentialsId: CREDENTIAL_ID, usernameVariable: 'USER', passwordVariable: 'PASS')]) {
-// $ 앞에 \ 를 붙여주세요!
-sh "docker login ${REGISTRY} -u \$USER -p \$PASS"
+                        // Docker 로그인
+                        sh "docker login ${REGISTRY} -u \$USER -p \$PASS"
+                        // Docker 이미지 푸시
                         sh "docker push ${fullImageName}"
                     }
 
