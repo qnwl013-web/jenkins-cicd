@@ -13,7 +13,7 @@ pipeline {
 
         // SonarQube URL 및 토큰 설정
         SONARQUBE_URL = 'http://192.168.0.204:9000'  // SonarQube 서버 주소
-        SONARQUBE_TOKEN = 'sqa_ecde331e39aafd80cb15b8b2d73162017c8bef9a'  // SonarQube에서 생성한 토큰
+        SONARQUBE_TOKEN = 'sqa_4ca398bbb038ee6fb87aefd540c22ac980f55e8c'  // SonarQube에서 생성한 토큰
         SONARQUBE = 'SonarQube' // SonarQube 서버 이름
     }
 
